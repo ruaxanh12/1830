@@ -133,7 +133,6 @@ let audioUnlocked=false;
 
 /* ⭐ ULTRA STABLE AUDIO UNLOCK */
 function unlockAudioSystem(){
-
   if(audioUnlocked) return;
 
   const AudioContext = window.AudioContext || window.webkitAudioContext;
@@ -148,16 +147,14 @@ function unlockAudioSystem(){
   audioUnlocked=true;
 }
 
-/* ⭐ PRELOAD ALL AUDIO */
+/* ⭐ PRELOAD */
 function preloadAudios(){
   for(let i=1;i<=5;i++){
-    const a=document.getElementById('a'+i);
-    a.load();
+    document.getElementById('a'+i).load();
   }
 }
 
 function startStory(){
-
   unlockAudioSystem();
   preloadAudios();
 
@@ -173,19 +170,19 @@ function startStory(){
   playMemory(1);
 }
 
-/* ⭐ SAFARI FRIENDLY PLAYBACK */
+/* ⭐ PLAYBACK */
 async function playMemory(n){
-
   const m=document.getElementById('m'+n);
   const a=document.getElementById('a'+n);
 
   m.style.display='block';
 
   try{
+    duckMusic(true);  // ⭐ giảm nhạc khi voice nói
     await playAudioSafely(a);
-  }catch{
-    console.log("Audio fail → skip");
-  }
+  }catch{}
+
+  duckMusic(false); // ⭐ trả nhạc về nền
 
   m.classList.add('fade-out');
 
@@ -200,27 +197,20 @@ async function playMemory(n){
 }
 
 function playAudioSafely(audio){
-
   return new Promise((resolve,reject)=>{
-
     audio.currentTime=0;
-
     const playPromise=audio.play();
 
     if(playPromise!==undefined){
       playPromise.then(()=>{
-
         audio.onended=resolve;
 
-        // ⭐ Backup nếu Safari chết ngầm
         setTimeout(()=>{
           if(audio.paused) resolve();
         }, audio.duration*1000 + 500);
 
       }).catch(reject);
-    }else{
-      reject();
-    }
+    }else reject();
   });
 }
 
@@ -230,12 +220,23 @@ function showEnding(){
   fadeOut(document.getElementById('bgMusic'),4000);
 }
 
+/* 💙 CINEMATIC MIX */
+function duckMusic(active){
+  const bg=document.getElementById('bgMusic');
+
+  if(active){
+    bg.volume = 0.05;  // ⭐ nền rất nhẹ khi voice nói
+  }else{
+    bg.volume = 0.12;  // ⭐ nền chuẩn điện ảnh
+  }
+}
+
 function fadeIn(audio,d){
   let v=0;
   const i=setInterval(()=>{
     v+=0.02;
-    audio.volume=Math.min(v,0.25);
-    if(v>=0.25) clearInterval(i);
+    audio.volume=Math.min(v,0.12); // ⭐ GIẢM NHẠC
+    if(v>=0.12) clearInterval(i);
   },d*0.02);
 }
 
