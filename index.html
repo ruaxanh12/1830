@@ -130,7 +130,7 @@ audio{display:none;}
 
 <canvas id="hearts"></canvas>
 <div class="overlay"></div>
-<audio id="bgMusic" src="piano.m4a" loop autoplay muted></audio>
+<audio id="bgMusic" src="piano.m4a" loop></audio>
 
 <div class="container" id="intro">
   <h1>Chặng đường của chúng mình</h1>
@@ -195,7 +195,8 @@ function startStory(){
   const bg=document.getElementById('bgMusic');
   bg.muted=false;
   bg.volume=0;
-  bg.play();
+  bg.currentTime = 0;
+  bg.play().catch(()=>{});
   fadeIn(bg,3500);
 
   document.getElementById('intro').style.display='none';
@@ -328,4 +329,5 @@ function stopHeartsMotion(){ stopMotion=true; }
 
 </body>
 </html>
+
 
