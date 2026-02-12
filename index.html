@@ -1,0 +1,331 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Chặng đường của chúng mình</title>
+
+<style>
+body{
+  margin:0;
+  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Arial;
+  background:url('background.jpg') center/cover fixed;
+  color:#f2f2f2;
+  overflow:hidden;
+  text-align:center;
+}
+
+#hearts{
+  position:fixed;
+  inset:0;
+  z-index:0;
+  pointer-events:none;
+}
+
+.overlay{
+  position:fixed;
+  inset:0;
+  background:rgba(0,0,0,.55);
+  transition:background 3s ease;
+  z-index:1;
+  pointer-events:none;
+}
+.overlay.dark{background:rgba(0,0,0,.85);}
+
+.container{
+  position:relative;
+  z-index:2;
+  min-height:100vh;
+  display:flex;
+  flex-direction:column;
+  justify-content:center;
+  align-items:center;
+  padding:20px;
+}
+
+button{
+  padding:12px 26px;
+  border:none;
+  border-radius:30px;
+  background:#ff5c8a;
+  color:#fff;
+  font-size:1rem;
+  cursor:pointer;
+}
+
+.memory{
+  display:none;
+  flex-direction:column;
+  align-items:center;
+  animation:fadeIn 2s ease forwards;
+}
+
+.memory.fade-out{
+  animation:fadeOut 1.6s ease forwards;
+}
+
+.memory img{
+  width:90%;
+  max-width:420px;
+  border-radius:18px;
+  box-shadow:0 15px 40px rgba(0,0,0,.6);
+}
+
+.caption{
+  margin-top:8px;
+  font-size:.9rem;
+  opacity:.75;
+}
+
+audio{display:none;}
+
+.ending-text{
+  font-size:1.4rem;
+  line-height:1.6;
+}
+
+.line{
+  opacity:0;
+  animation:lineFade 2.2s forwards;
+  text-shadow:0 0 12px rgba(255,120,150,.35);
+}
+
+.soft-note{
+  font-size:.8rem;
+  opacity:0;
+  letter-spacing:.18em;
+  margin-bottom:18px;
+  animation:noteFade 3s forwards;
+  animation-delay:5s;
+}
+
+.restart{
+  margin-top:40px;
+  opacity:0;
+  cursor:pointer;
+  animation:restartFade 2s forwards;
+  animation-delay:11s;
+}
+
+@keyframes fadeIn{
+  from{opacity:0; transform:scale(.96);}
+  to{opacity:1; transform:scale(1);}
+}
+
+@keyframes fadeOut{
+  to{opacity:0; transform:scale(1.04);}
+}
+
+@keyframes lineFade{
+  from{opacity:0; transform:translateY(-12px);}
+  to{opacity:1; transform:translateY(0);}
+}
+
+@keyframes noteFade{to{opacity:.65}}
+@keyframes restartFade{to{opacity:.65}}
+</style>
+</head>
+
+<body>
+
+<canvas id="hearts"></canvas>
+<div class="overlay"></div>
+<audio id="bgMusic" src="piano.m4a" loop autoplay muted></audio>
+
+<div class="container" id="intro">
+  <h1>Chặng đường của chúng mình</h1>
+  <p>Từng khoảnh khắc, anh vẫn nhớ.</p>
+  <button onclick="startStory()">Bắt đầu</button>
+</div>
+
+<div class="container" id="story" style="display:none">
+
+  <div class="memory" id="m1">
+    <img src="img1.jpg">
+    <audio id="a1" src="voice1.m4a"></audio>
+  </div>
+
+  <div class="memory" id="m2">
+    <img src="img2.jpg">
+    <audio id="a2" src="voice2.m4a"></audio>
+  </div>
+
+  <div class="memory" id="m3">
+    <img src="img3.jpg">
+    <audio id="a3" src="voice3.m4a"></audio>
+  </div>
+
+  <div class="memory" id="m4">
+    <img src="img4.jpg">
+    <audio id="a4" src="voice4.m4a"></audio>
+  </div>
+
+  <div class="memory" id="m5">
+    <img src="img5.jpg">
+    <audio id="a5" src="voice5.m4a"></audio>
+  </div>
+
+  <div class="memory" id="ending">
+    <div class="ending-text">
+      <div class="soft-note">I LOVE YOU</div>
+
+      <div class="line" style="animation-delay:0s">Cảm ơn em đã đến bên anh</div>
+      <div class="line" style="animation-delay:2.8s">và yêu anh theo cách mà</div>
+      <div class="line" style="animation-delay:5.6s">anh chưa từng được cảm nhận.</div>
+
+      <div class="restart" onclick="location.reload()">⟲ Xem lại từ đầu</div>
+    </div>
+  </div>
+
+</div>
+
+<script>
+let current=1;
+
+function unlockAudio(){
+  const silent=new Audio();
+  silent.src="data:audio/mp3;base64,//uQxAAAAAAAAAAAAAAAAAAAAAAAWGluZwAAAA8AAAACAAACcQCA";
+  silent.volume=0;
+  silent.play().catch(()=>{});
+}
+
+function startStory(){
+  unlockAudio();
+
+  const bg=document.getElementById('bgMusic');
+  bg.muted=false;
+  bg.volume=0;
+  bg.play();
+  fadeIn(bg,3500);
+
+  document.getElementById('intro').style.display='none';
+  document.getElementById('story').style.display='flex';
+  showMemory(1);
+}
+
+function showMemory(n){
+  const m=document.getElementById('m'+n);
+  const a=document.getElementById('a'+n);
+
+  m.style.display='flex';
+
+  a.currentTime=0;
+  a.play().catch(()=>{});
+
+  a.onended=()=>{
+    m.classList.add('fade-out');
+
+    setTimeout(()=>{
+      m.style.display='none';
+      m.classList.remove('fade-out');
+
+      current++;
+      if(current<=5) showMemory(current);
+      else{
+        triggerEndingHearts();
+        fadeOut(document.getElementById('bgMusic'),4500);
+        document.querySelector('.overlay').classList.add('dark');
+        document.getElementById('ending').style.display='flex';
+
+        setTimeout(stopHeartsMotion,9000);
+      }
+    },1500);
+  }
+}
+
+function fadeIn(audio,d){
+  let v=0;
+  const i=setInterval(()=>{
+    v+=0.015;
+    audio.volume=Math.min(v,.25);
+    if(v>=.25) clearInterval(i);
+  },d*0.02);
+}
+
+function fadeOut(audio,d){
+  let v=audio.volume;
+  const i=setInterval(()=>{
+    v-=0.015;
+    audio.volume=Math.max(v,0);
+    if(v<=0){audio.pause();clearInterval(i);}
+  },d*0.02);
+}
+
+/* HEARTS EFFECT */
+const canvas=document.getElementById("hearts");
+const ctx=canvas.getContext("2d");
+
+canvas.width=window.innerWidth;
+canvas.height=window.innerHeight;
+
+window.addEventListener("resize",()=>{
+  canvas.width=window.innerWidth;
+  canvas.height=window.innerHeight;
+});
+
+let hearts=[];
+let endingMode=false;
+let stopMotion=false;
+
+function createHeart(){
+  const depth=Math.random();
+  return{
+    x:Math.random()*canvas.width,
+    y:Math.random()*canvas.height,
+    size:(Math.random()*24+12)*(depth+0.35),
+    speed:(Math.random()*0.45+0.2)*(depth+0.45),
+    drift:(Math.random()-0.5)*0.25,
+    opacity:Math.random()*0.35+0.2
+  };
+}
+
+for(let i=0;i<30;i++) hearts.push(createHeart());
+
+function drawHeart(x,y,s,o){
+  ctx.save();
+  ctx.globalAlpha=o;
+  ctx.shadowBlur=22;
+  ctx.shadowColor="rgba(255,140,170,.35)";
+  ctx.beginPath();
+  ctx.moveTo(x,y);
+  ctx.bezierCurveTo(x-s,y-s,x-2*s,y+s,x,y+2*s);
+  ctx.bezierCurveTo(x+2*s,y+s,x+s,y-s,x,y);
+  ctx.fillStyle="rgba(255,92,138,1)";
+  ctx.fill();
+  ctx.restore();
+}
+
+function animateHearts(){
+  ctx.clearRect(0,0,canvas.width,canvas.height);
+
+  hearts.forEach((h,i)=>{
+    drawHeart(h.x,h.y,h.size/4,h.opacity);
+
+    if(!stopMotion){
+      h.y-=h.speed;
+      h.x+=h.drift;
+    }
+
+    if(endingMode){
+      h.opacity*=0.993;
+      h.speed*=0.996;
+    }
+
+    if(h.y<-30||h.opacity<0.02){
+      hearts[i]=createHeart();
+      hearts[i].y=canvas.height+30;
+    }
+  });
+
+  requestAnimationFrame(animateHearts);
+}
+
+animateHearts();
+
+function triggerEndingHearts(){ endingMode=true; }
+function stopHeartsMotion(){ stopMotion=true; }
+</script>
+
+</body>
+</html>
+
