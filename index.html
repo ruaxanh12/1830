@@ -178,11 +178,11 @@ async function playMemory(n){
   m.style.display='block';
 
   try{
-    duckMusic(true);  // ⭐ giảm nhạc khi voice nói
+    duckMusic(true);
     await playAudioSafely(a);
   }catch{}
 
-  duckMusic(false); // ⭐ trả nhạc về nền
+  duckMusic(false);
 
   m.classList.add('fade-out');
 
@@ -220,14 +220,14 @@ function showEnding(){
   fadeOut(document.getElementById('bgMusic'),4000);
 }
 
-/* 💙 CINEMATIC MIX */
+/* 💙 LOW PIANO MIX */
 function duckMusic(active){
   const bg=document.getElementById('bgMusic');
 
   if(active){
-    bg.volume = 0.05;  // ⭐ nền rất nhẹ khi voice nói
+    bg.volume = 0.02;  // ⭐ cực nhẹ khi voice nói
   }else{
-    bg.volume = 0.12;  // ⭐ nền chuẩn điện ảnh
+    bg.volume = 0.06;  // ⭐ nền rất mềm
   }
 }
 
@@ -235,8 +235,8 @@ function fadeIn(audio,d){
   let v=0;
   const i=setInterval(()=>{
     v+=0.02;
-    audio.volume=Math.min(v,0.12); // ⭐ GIẢM NHẠC
-    if(v>=0.12) clearInterval(i);
+    audio.volume=Math.min(v,0.06); // ⭐ nền nhỏ
+    if(v>=0.06) clearInterval(i);
   },d*0.02);
 }
 
