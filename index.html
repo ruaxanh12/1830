@@ -159,10 +159,10 @@ function startStory(){
   preloadAudios();
 
   const bg=document.getElementById('bgMusic');
-  bg.currentTime=0;
-  bg.volume=0;
+
+  bg.currentTime = 0;
+  bg.volume = 0.03;   // ⭐ STUDIO LEVEL (rất mềm trên mobile)
   bg.play().catch(()=>{});
-  fadeIn(bg,3000);
 
   document.getElementById('intro').style.display='none';
   document.getElementById('story').style.display='flex';
@@ -217,36 +217,33 @@ function playAudioSafely(audio){
 function showEnding(){
   document.querySelector('.overlay').classList.add('dark');
   document.getElementById('ending').style.display='block';
-  fadeOut(document.getElementById('bgMusic'),4000);
+  fadeOutMusic();
 }
 
-/* 💙 LOW PIANO MIX */
+/* 💙 STUDIO MIX */
 function duckMusic(active){
   const bg=document.getElementById('bgMusic');
 
   if(active){
-    bg.volume = 0.02;  // ⭐ cực nhẹ khi voice nói
+    bg.volume = 0.01;  // ⭐ gần như ambience khi voice nói
   }else{
-    bg.volume = 0.06;  // ⭐ nền rất mềm
+    bg.volume = 0.03;  // ⭐ nền rất xa (cinema style)
   }
 }
 
-function fadeIn(audio,d){
-  let v=0;
-  const i=setInterval(()=>{
-    v+=0.02;
-    audio.volume=Math.min(v,0.06); // ⭐ nền nhỏ
-    if(v>=0.06) clearInterval(i);
-  },d*0.02);
-}
+function fadeOutMusic(){
+  const bg=document.getElementById('bgMusic');
+  let v=bg.volume;
 
-function fadeOut(audio,d){
-  let v=audio.volume;
   const i=setInterval(()=>{
-    v-=0.02;
-    audio.volume=Math.max(v,0);
-    if(v<=0){audio.pause();clearInterval(i);}
-  },d*0.02);
+    v-=0.002;
+    bg.volume=Math.max(v,0);
+
+    if(v<=0){
+      bg.pause();
+      clearInterval(i);
+    }
+  },16);
 }
 
 /* 💗 HEARTS */
